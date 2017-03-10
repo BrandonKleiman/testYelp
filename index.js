@@ -5,7 +5,11 @@ var request = require('request');
 var app = express();
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+app.use(express.static(__dirname));
 
+app.get('/', function(req, res) {
+  res.send('index');
+})
 
 app.get('/search', function(req, res) {
 
@@ -16,8 +20,8 @@ app.get('/search', function(req, res) {
 app.get('/getAll', function(req, res) {
 
 var cb = function(token) {
-  console.log(token);
-  var options = { method: 'GET',
+  var bearer = JSON.parse(token).access_token;
+   var options = { method: 'GET',
     url: 'https://api.yelp.com/v3/businesses/search',
     qs: 
     { term: 'coffee',
@@ -27,9 +31,9 @@ var cb = function(token) {
     headers: 
     { 'postman-token': '93676d7e-657a-46fd-71fc-a9b2fcf909a5',
       'cache-control': 'no-cache',
-      authorization: 'Bearer '+token.access_token } };
+      authorization: 'Bearer '+bearer } };
       console.log(options.headers)
-  request(options, function (erroddr, response, body) {
+  request(options, function (error, response, body) {
     if (error) throw new Error(error);
 
     res.send(body);
